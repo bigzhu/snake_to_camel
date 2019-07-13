@@ -4,7 +4,6 @@ import re
 import os
 from tempfile import mkstemp
 from shutil import move
-import replace
 
 
 def findSnake(content):
@@ -29,7 +28,7 @@ def transToCamel(txt):
 
 def replaceSnake(file_path):
     '''进行替换
-    >>> replace('test.txt')
+    >>> replaceSnake('test.txt')
     '''
     # Create temp file
     old_file = open(file_path)
@@ -54,10 +53,25 @@ def replaceSnake(file_path):
     move(abs_path, file_path)
 
 
+file_paths = []
+
+
+def getFilePath(root_path):
+    for lists in os.listdir(root_path):
+        if lists in ('.git', 'node_modules'):
+            continue
+        the_path = os.path.join(root_path, lists)
+        if os.path.isdir(the_path):
+            getFilePath(the_path)
+        else:
+            file_paths.append(the_path)
+    return file_paths
+
+
 if __name__ == '__main__':
     #import doctest
     #doctest.testmod(verbose=False, optionflags=doctest.ELLIPSIS)
     path = os.getcwd()
-    file_paths = replace.getFilePath(path)
+    getFilePath(path)
     for file_path in file_paths:
         replaceSnake(file_path)
