@@ -1,0 +1,3 @@
+[submodule "replace"]
+	path = replace
+	url = https://github.com/bigzhu/replace
