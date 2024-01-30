@@ -13,9 +13,7 @@ def findSnake(content):
     '''
 
     result = re.findall(r'[a-z]_[a-z]', content)
-    # 转换数据对的同时实现排重
-    trans_pair = dict((k, transToCamel(k)) for k in result)
-    return trans_pair
+    return {k: transToCamel(k) for k in result}
 
 
 def transToCamel(txt):
@@ -32,21 +30,17 @@ def replaceSnake(file_path):
     '''
     # Create temp file
     old_file = open(file_path)
-    print('替换: ' + file_path)
+    print(f'替换: {file_path}')
     old_file.seek(0)
-    old_file = open(file_path)
-    fh, abs_path = mkstemp()
-    new_file = open(abs_path, 'w')
-    for line in old_file:
-        new_line = line
-        # 找到需要替换的字符并且循环
-        for k, v in findSnake(line).items():
-            new_line = new_line.replace(k, v)
-        new_file.write(new_line)
-    # close temp file
-    new_file.close()
-    os.close(fh)
-    old_file.close()
+    with open(file_path) as old_file:
+        fh, abs_path = mkstemp()
+        with open(abs_path, 'w') as new_file:
+            for line in old_file:
+                new_line = line
+                for k, v in findSnake(new_line).items():
+                    new_line = new_line.replace(k, v)
+                new_file.write(new_line)
+        os.close(fh)
     # Remove original file
     os.remove(file_path)
     # Move new file
